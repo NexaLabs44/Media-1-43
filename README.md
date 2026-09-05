@@ -18,6 +18,8 @@ Plan de 20 semanas, 3 sesiones por semana más fuerza opcional, del 1 de octubre
 - Al marcar, se rellenan los km previstos: cámbialos si has hecho otra cosa.
 - Anota ritmo real y esfuerzo percibido (1 a 10) para ver la tendencia.
 - Las notas semanales se guardan solas.
+- Cada semana recibe una nota sobre 10: constancia 45 %, volumen 20 %, ritmo 25 % y fuerza 10 %. En el ritmo, pasarse de rápido descuenta igual que quedarse corto. La cabecera muestra la nota media y la racha de semanas con 7 o más.
+- En la sesión de fuerza solo se indica cuántas de las dos has hecho: no pide kilómetros ni ritmo.
 - La barra de 20 semanas de arriba muestra el volumen de cada una y cuánto llevas hecho.
 
 ## Dónde se guardan los datos

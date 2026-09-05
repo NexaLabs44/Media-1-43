@@ -144,6 +144,24 @@ body{
 }
 .log input:focus,.log select:focus,textarea:focus{outline:2px solid var(--ink);outline-offset:1px}
 
+.score{
+  margin-top:20px;border-top:1px solid var(--line);padding-top:18px;
+  display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap;
+}
+.score-num{flex:0 0 auto}
+.score-num b{
+  display:block;font-variation-settings:"wdth" 72,"wght" 800;
+  font-size:3.4rem;line-height:.9;font-feature-settings:"tnum";
+}
+.score-num span{font-size:.8rem;color:var(--soft)}
+.score-num i{font-style:normal;display:block;font-size:.92rem;font-variation-settings:"wght" 650;margin-top:5px}
+.breakdown{flex:1 1 260px;min-width:220px}
+.brow{display:grid;grid-template-columns:96px 1fr 34px;gap:9px;align-items:center;font-size:.78rem;margin-bottom:7px}
+.brow u{text-decoration:none;color:var(--soft)}
+.brow k{display:block;height:7px;border-radius:4px;background:var(--line);overflow:hidden}
+.brow k b{display:block;height:100%;background:var(--ink);border-radius:4px}
+.brow var{font-style:normal;text-align:right;color:var(--soft);font-feature-settings:"tnum"}
+.hint{font-size:.8rem;color:var(--soft);margin:2px 0 0;max-width:62ch}
 .notes{margin-top:20px;border-top:1px solid var(--line);padding-top:18px}
 .notes label{font-size:.8rem;color:var(--soft);display:block;margin-bottom:6px}
 textarea{
@@ -194,7 +212,8 @@ footer{font-size:.78rem;color:var(--soft);text-align:center;padding-top:8px}
     <div class="stat"><b id="stDays">—</b><span>días para la carrera</span></div>
     <div class="stat"><b id="stDone">—</b><span>sesiones completadas</span></div>
     <div class="stat"><b id="stKm">—</b><span>km corridos</span></div>
-    <div class="stat"><b id="stAdh">—</b><span>cumplimiento del plan</span></div>
+    <div class="stat"><b id="stNota">—</b><span>nota media</span></div>
+    <div class="stat"><b id="stRacha">—</b><span>racha de semanas</span></div>
   </div>
 </header>
 
@@ -224,6 +243,18 @@ footer{font-size:.78rem;color:var(--soft);text-align:center;padding-top:8px}
     <tr><td>Umbral</td><td>Bloques de 8 a 15 minutos, respiración fuerte pero controlada</td><td>4:40–4:48</td></tr>
     <tr><td>Series</td><td>Repeticiones de 1000 a 1500 m</td><td>4:28–4:38</td></tr>
   </table>
+</section>
+
+<section class="zones">
+  <h2>Cómo sale la nota</h2>
+  <table>
+    <tr><th>Apartado</th><th>Qué mide</th><th>Peso</th></tr>
+    <tr><td>Constancia</td><td>Sesiones de carrera completadas sobre las previstas</td><td>45 %</td></tr>
+    <tr><td>Volumen</td><td>Kilómetros reales sobre los planificados</td><td>20 %</td></tr>
+    <tr><td>Ritmo</td><td>Lo cerca que has corrido del ritmo previsto de cada sesión</td><td>25 %</td></tr>
+    <tr><td>Fuerza</td><td>Sesiones de fuerza hechas de las dos semanales</td><td>10 %</td></tr>
+  </table>
+  <p class="hint">En el apartado de ritmo, correr más rápido de lo previsto puntúa igual de mal que correr más lento. Los rodajes suaves rápidos son el error más común y el que más lastra las sesiones de calidad. Hay un margen del 2 % antes de empezar a descontar, y los apartados sin datos no cuentan.</p>
 </section>
 
 <section class="data">
@@ -258,161 +289,161 @@ const PLAN = [
 {n:0,start:"2026-10-01",dates:"1–4 octubre",phase:"base",
  focus:"Semana de arranque, corta. No estrenes zapatillas ni ritmos: se trata de encadenar tres días sin molestias.",
  s:[
-  {d:"Jueves",t:"suave",ti:"Rodaje de estreno",de:"7 km muy suaves a 6:00–6:20.",km:7},
-  {d:"Sábado",t:"suave",ti:"Rodaje con rectas",de:"6 km suaves y 6 rectas de 20 s en progresión, con recuperación andando.",km:6},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"8 km continuos a 5:55–6:10.",km:8},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min: sentadillas, zancadas, puentes de glúteo, gemelo a una pierna, core.",km:0}
+  {d:"Jueves",t:"suave",ti:"Rodaje de estreno",de:"7 km muy suaves a 6:00–6:20.",rp:"6:10",km:7},
+  {d:"Sábado",t:"suave",ti:"Rodaje con rectas",de:"6 km suaves y 6 rectas de 20 s en progresión, con recuperación andando.",rp:"6:00",km:6},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"8 km continuos a 5:55–6:10.",rp:"6:00",km:8},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min: sentadillas, zancadas, puentes de glúteo, gemelo a una pierna, core.",rp:null,km:0}
  ]},
 {n:1,start:"2026-10-05",dates:"5–11 octubre",phase:"base",
  focus:"Primer contacto con cambios de ritmo dentro del rodaje, sin cronómetro estricto.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Fartlek corto",de:"2 km suaves, 6 × 1 min fuerte con 2 min suaves, 2 km suaves. Total 8 km.",km:8},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km a 6:00–6:15 más 6 rectas de 20 s.",km:7},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"10 km a 5:50–6:05.",km:10},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Fartlek corto",de:"2 km suaves, 6 × 1 min fuerte con 2 min suaves, 2 km suaves. Total 8 km.",rp:"5:45",km:8},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km a 6:00–6:15 más 6 rectas de 20 s.",rp:"6:05",km:7},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"10 km a 5:50–6:05.",rp:"5:57",km:10},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:2,start:"2026-10-12",dates:"12–18 octubre",phase:"base",
  focus:"Entran las cuestas: construyen fuerza sin castigar las articulaciones y te sirven de los 150 m de desnivel que ya haces.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Cuestas",de:"2 km de calentamiento, 8 × 45 s en subida del 4–6 % bajando al trote, 2 km suaves.",km:8},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km a 6:00–6:15.",km:7},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"11 km, los 2 últimos a 5:30.",km:11},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Cuestas",de:"2 km de calentamiento, 8 × 45 s en subida del 4–6 % bajando al trote, 2 km suaves.",rp:"5:55",km:8},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km a 6:00–6:15.",rp:"6:05",km:7},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"11 km, los 2 últimos a 5:30.",rp:"5:50",km:11},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:3,start:"2026-10-19",dates:"19–25 octubre",phase:"base",
  focus:"Semana más alta del bloque de base. Si algo molesta, recorta el largo antes que la calidad.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Fartlek",de:"2 km suaves, 8 × 1 min fuerte con 1:30 suaves, 2 km suaves. Total 9 km.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15 más 6 rectas.",km:8},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"12 km a 5:45–6:00.",km:12},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Fartlek",de:"2 km suaves, 8 × 1 min fuerte con 1:30 suaves, 2 km suaves. Total 9 km.",rp:"5:40",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15 más 6 rectas.",rp:"6:05",km:8},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"12 km a 5:45–6:00.",rp:"5:52",km:12},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:4,start:"2026-10-26",dates:"26 octubre – 1 noviembre",phase:"base",
  focus:"Descarga. Baja el volumen para asimilar el mes y llegar fresco al bloque duro.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Cuestas",de:"2 km suaves, 6 × 45 s en subida, 2 km suaves. Total 7 km.",km:7},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km muy suaves a 6:10–6:25.",km:7},
-  {d:"Domingo",t:"largo",ti:"Largo con progresión",de:"10 km, los 3 últimos a 5:20.",km:10},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Cuestas",de:"2 km suaves, 6 × 45 s en subida, 2 km suaves. Total 7 km.",rp:"5:55",km:7},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"7 km muy suaves a 6:10–6:25.",rp:"6:15",km:7},
+  {d:"Domingo",t:"largo",ti:"Largo con progresión",de:"10 km, los 3 últimos a 5:20.",rp:"5:45",km:10},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:5,start:"2026-11-02",dates:"2–8 noviembre",phase:"fuerza",
  focus:"Empiezan las series medidas. Corre los 1000 por sensación primero y ajusta el ritmo en la tercera repetición.",
  s:[
-  {d:"Martes",t:"calidad",ti:"5 × 1000",de:"2 km de calentamiento, 5 × 1000 m a 4:35–4:40 con 2 min de trote, 2 km de vuelta a la calma.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15 más 6 rectas.",km:8},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"13 km a 5:45–6:00.",km:13},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"5 × 1000",de:"2 km de calentamiento, 5 × 1000 m a 4:35–4:40 con 2 min de trote, 2 km de vuelta a la calma.",rp:"5:25",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15 más 6 rectas.",rp:"6:05",km:8},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"13 km a 5:45–6:00.",rp:"5:52",km:13},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:6,start:"2026-11-09",dates:"9–15 noviembre",phase:"fuerza",
  focus:"Primer trabajo de umbral. Es el estímulo que más va a mover tu marca en una media.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Umbral 2 × 10 min",de:"2 km suaves, 2 × 10 min a 4:45 con 3 min de trote, 2 km suaves.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15.",km:9},
-  {d:"Domingo",t:"largo",ti:"Largo con progresión",de:"14 km, los 3 últimos a 5:15.",km:14},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Umbral 2 × 10 min",de:"2 km suaves, 2 × 10 min a 4:45 con 3 min de trote, 2 km suaves.",rp:"5:20",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15.",rp:"6:05",km:9},
+  {d:"Domingo",t:"largo",ti:"Largo con progresión",de:"14 km, los 3 últimos a 5:15.",rp:"5:40",km:14},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:7,start:"2026-11-16",dates:"16–22 noviembre",phase:"fuerza",
  focus:"Semana exigente. Duerme y come bien alrededor del martes y del domingo.",
  s:[
-  {d:"Martes",t:"calidad",ti:"6 × 1000",de:"2 km suaves, 6 × 1000 m a 4:35 con 2 min de trote, 2 km suaves.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15 más 8 rectas.",km:9},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"15 km a 5:40–5:55.",km:15},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"6 × 1000",de:"2 km suaves, 6 × 1000 m a 4:35 con 2 min de trote, 2 km suaves.",rp:"5:20",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15 más 8 rectas.",rp:"6:05",km:9},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"15 km a 5:40–5:55.",rp:"5:47",km:15},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:8,start:"2026-11-23",dates:"23–29 noviembre",phase:"fuerza",
  focus:"Primer control real. Busca un 10K popular el domingo; te dirá si 1:43 va encaminado. Referencia: 47:30 para un 10K equivale a 1:44–1:45 en media.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Ritmo controlado",de:"2 km suaves, 4 × 5 min a 4:45 con 2 min de trote, 2 km suaves.",km:8},
-  {d:"Jueves",t:"suave",ti:"Rodaje corto",de:"6 km muy suaves.",km:6},
-  {d:"Domingo",t:"carrera",ti:"10K de control",de:"2 km de calentamiento, 10 km a tope, 1 km de vuelta a la calma. Sal a 4:45 y aprieta desde el km 6.",km:13},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión ligera, lunes o martes.",km:0}
+  {d:"Martes",t:"calidad",ti:"Ritmo controlado",de:"2 km suaves, 4 × 5 min a 4:45 con 2 min de trote, 2 km suaves.",rp:"5:25",km:8},
+  {d:"Jueves",t:"suave",ti:"Rodaje corto",de:"6 km muy suaves.",rp:"6:10",km:6},
+  {d:"Domingo",t:"carrera",ti:"10K de control",de:"2 km de calentamiento, 10 km a tope, 1 km de vuelta a la calma. Sal a 4:45 y aprieta desde el km 6.",rp:"5:15",km:13},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión ligera, lunes o martes.",rp:null,km:0}
  ]},
 {n:9,start:"2026-11-30",dates:"30 noviembre – 6 diciembre",phase:"fuerza",
  focus:"Ajusta los ritmos del plan según el resultado del 10K antes de seguir.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Umbral 3 × 8 min",de:"2 km suaves, 3 × 8 min a 4:45 con 2:30 de trote, 2 km suaves.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",km:10},
-  {d:"Domingo",t:"largo",ti:"Largo con bloque",de:"15 km con 5 km centrales a 5:10.",km:15},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Umbral 3 × 8 min",de:"2 km suaves, 3 × 8 min a 4:45 con 2:30 de trote, 2 km suaves.",rp:"5:20",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",rp:"6:05",km:10},
+  {d:"Domingo",t:"largo",ti:"Largo con bloque",de:"15 km con 5 km centrales a 5:10.",rp:"5:35",km:15},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:10,start:"2026-12-07",dates:"7–13 diciembre",phase:"fuerza",
  focus:"Series algo más largas. Frío: calienta 10 minutos más de lo que te pida el cuerpo.",
  s:[
-  {d:"Martes",t:"calidad",ti:"5 × 1200",de:"2 km suaves, 5 × 1200 m a 4:35 con 2 min de trote, 2 km suaves.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15 más 8 rectas.",km:10},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"16 km a 5:40–5:55.",km:16},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"5 × 1200",de:"2 km suaves, 5 × 1200 m a 4:35 con 2 min de trote, 2 km suaves.",rp:"5:20",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15 más 8 rectas.",rp:"6:05",km:10},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"16 km a 5:40–5:55.",rp:"5:47",km:16},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:11,start:"2026-12-14",dates:"14–20 diciembre",phase:"fuerza",
  focus:"Semana grande antes de Navidad: el largo de 18 km es el primero que se parece a la carrera.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Umbral 2 × 15 min",de:"2 km suaves, 2 × 15 min a 4:45 con 3 min de trote, 2 km suaves.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",km:10},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"18 km, los 4 últimos a 5:05.",km:18},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Umbral 2 × 15 min",de:"2 km suaves, 2 × 15 min a 4:45 con 3 min de trote, 2 km suaves.",rp:"5:15",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",rp:"6:05",km:10},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"18 km, los 4 últimos a 5:05.",rp:"5:35",km:18},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:12,start:"2026-12-21",dates:"21–27 diciembre",phase:"espec",
  focus:"Navidad. Semana flexible: mueve los días como necesites y prioriza salir tres veces aunque sea corto.",
  s:[
-  {d:"Flexible",t:"calidad",ti:"Fartlek",de:"2 km suaves, 10 × 1 min fuerte con 1 min suave, 2 km suaves. Total 8 km.",km:8},
-  {d:"Flexible",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15.",km:8},
-  {d:"Flexible",t:"largo",ti:"Tirada larga",de:"13 km a 5:45–6:00.",km:13},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión, la que puedas.",km:0}
+  {d:"Flexible",t:"calidad",ti:"Fartlek",de:"2 km suaves, 10 × 1 min fuerte con 1 min suave, 2 km suaves. Total 8 km.",rp:"5:40",km:8},
+  {d:"Flexible",t:"suave",ti:"Rodaje",de:"8 km a 6:00–6:15.",rp:"6:05",km:8},
+  {d:"Flexible",t:"largo",ti:"Tirada larga",de:"13 km a 5:45–6:00.",rp:"5:52",km:13},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión, la que puedas.",rp:null,km:0}
  ]},
 {n:13,start:"2026-12-28",dates:"28 diciembre – 3 enero",phase:"espec",
  focus:"Aparece el ritmo objetivo en bloques. Memoriza la sensación de 4:50: debe parecerte cómodamente incómodo.",
  s:[
-  {d:"Flexible",t:"calidad",ti:"3 × 10 min a ritmo de media",de:"2 km suaves, 3 × 10 min a 4:50 con 2 min de trote, 2 km suaves.",km:9},
-  {d:"Flexible",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15.",km:9},
-  {d:"Flexible",t:"largo",ti:"Tirada larga",de:"15 km a 5:40–5:55.",km:15},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión de 25 min.",km:0}
+  {d:"Flexible",t:"calidad",ti:"3 × 10 min a ritmo de media",de:"2 km suaves, 3 × 10 min a 4:50 con 2 min de trote, 2 km suaves.",rp:"5:20",km:9},
+  {d:"Flexible",t:"suave",ti:"Rodaje",de:"9 km a 6:00–6:15.",rp:"6:05",km:9},
+  {d:"Flexible",t:"largo",ti:"Tirada larga",de:"15 km a 5:40–5:55.",rp:"5:47",km:15},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión de 25 min.",rp:null,km:0}
  ]},
 {n:14,start:"2027-01-04",dates:"4–10 enero",phase:"espec",
  focus:"Arranca el bloque específico. Todo apunta ya al 14 de febrero.",
  s:[
-  {d:"Martes",t:"calidad",ti:"6 × 1000",de:"2 km suaves, 6 × 1000 m a 4:30 con 2 min de trote, 2 km suaves.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15 más 8 rectas.",km:10},
-  {d:"Domingo",t:"largo",ti:"Largo con ritmo de carrera",de:"17 km con 6 km a 4:55 entre los km 8 y 14.",km:17},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"6 × 1000",de:"2 km suaves, 6 × 1000 m a 4:30 con 2 min de trote, 2 km suaves.",rp:"5:15",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15 más 8 rectas.",rp:"6:05",km:10},
+  {d:"Domingo",t:"largo",ti:"Largo con ritmo de carrera",de:"17 km con 6 km a 4:55 entre los km 8 y 14.",rp:"5:30",km:17},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:15,start:"2027-01-11",dates:"11–17 enero",phase:"espec",
  focus:"Pico de volumen del plan. El largo de 19 km es el más exigente: sal con comida y agua planificadas.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Umbral 3 × 10 min",de:"2 km suaves, 3 × 10 min a 4:42 con 2:30 de trote, 2 km suaves.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"11 km a 6:00–6:15.",km:11},
-  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"19 km a 5:35–5:50.",km:19},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"Umbral 3 × 10 min",de:"2 km suaves, 3 × 10 min a 4:42 con 2:30 de trote, 2 km suaves.",rp:"5:15",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"11 km a 6:00–6:15.",rp:"6:05",km:11},
+  {d:"Domingo",t:"largo",ti:"Tirada larga",de:"19 km a 5:35–5:50.",rp:"5:42",km:19},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:16,start:"2027-01-18",dates:"18–24 enero",phase:"espec",
  focus:"Segundo control. Un 10K a tope aquí debería salir cerca de 46:30 si 1:43 está en su sitio.",
  s:[
-  {d:"Martes",t:"calidad",ti:"5 × 1000 controlados",de:"2 km suaves, 5 × 1000 m a 4:45 con 90 s de trote, 2 km suaves.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje corto",de:"8 km muy suaves.",km:8},
-  {d:"Domingo",t:"carrera",ti:"10K de control",de:"2 km de calentamiento, 10 km a tope, 1 km suave. Si no encuentras carrera, 15 km a 5:00.",km:13},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión ligera.",km:0}
+  {d:"Martes",t:"calidad",ti:"5 × 1000 controlados",de:"2 km suaves, 5 × 1000 m a 4:45 con 90 s de trote, 2 km suaves.",rp:"5:20",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje corto",de:"8 km muy suaves.",rp:"6:10",km:8},
+  {d:"Domingo",t:"carrera",ti:"10K de control",de:"2 km de calentamiento, 10 km a tope, 1 km suave. Si no encuentras carrera, 15 km a 5:00.",rp:"5:15",km:13},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Una sesión ligera.",rp:null,km:0}
  ]},
 {n:17,start:"2027-01-25",dates:"25–31 enero",phase:"espec",
  focus:"La sesión clave del plan: 10 km a ritmo de carrera dentro de un largo. Si sale bien, el 14 de febrero sale bien.",
  s:[
-  {d:"Martes",t:"calidad",ti:"2 × 4 km a ritmo de media",de:"2 km suaves, 2 × 4 km a 4:53 con 3 min de trote, 1 km suave.",km:10},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",km:10},
-  {d:"Domingo",t:"largo",ti:"Largo específico",de:"18 km: 5 km suaves, 10 km a 4:55, 3 km suaves. Ensaya avituallamiento y ropa de carrera.",km:18},
-  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",km:0}
+  {d:"Martes",t:"calidad",ti:"2 × 4 km a ritmo de media",de:"2 km suaves, 2 × 4 km a 4:53 con 3 min de trote, 1 km suave.",rp:"5:15",km:10},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"10 km a 6:00–6:15.",rp:"6:05",km:10},
+  {d:"Domingo",t:"largo",ti:"Largo específico",de:"18 km: 5 km suaves, 10 km a 4:55, 3 km suaves. Ensaya avituallamiento y ropa de carrera.",rp:"5:20",km:18},
+  {d:"Libre",t:"fuerza",ti:"Fuerza y movilidad",de:"Dos sesiones de 25 min.",rp:null,km:0}
  ]},
 {n:18,start:"2027-02-01",dates:"1–7 febrero",phase:"afinado",
  focus:"Empieza el afinado. Baja el volumen, mantén la intensidad. Vas a sentirte raro y con energía sobrante: es lo esperado.",
  s:[
-  {d:"Martes",t:"calidad",ti:"4 × 1500",de:"2 km suaves, 4 × 1500 m a 4:45 con 2 min de trote, 1 km suave.",km:9},
-  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km suaves más 6 rectas.",km:8},
-  {d:"Domingo",t:"largo",ti:"Largo corto con ritmo",de:"12 km con 4 km a 4:53 en el medio.",km:12},
-  {d:"Libre",t:"fuerza",ti:"Movilidad",de:"Una sesión suave, sin cargas altas.",km:0}
+  {d:"Martes",t:"calidad",ti:"4 × 1500",de:"2 km suaves, 4 × 1500 m a 4:45 con 2 min de trote, 1 km suave.",rp:"5:15",km:9},
+  {d:"Jueves",t:"suave",ti:"Rodaje",de:"8 km suaves más 6 rectas.",rp:"6:00",km:8},
+  {d:"Domingo",t:"largo",ti:"Largo corto con ritmo",de:"12 km con 4 km a 4:53 en el medio.",rp:"5:30",km:12},
+  {d:"Libre",t:"fuerza",ti:"Movilidad",de:"Una sesión suave, sin cargas altas.",rp:null,km:0}
  ]},
 {n:19,start:"2027-02-08",dates:"8–14 febrero",phase:"carrera",
  focus:"Semana de carrera. Nada nuevo: ni zapatillas, ni geles, ni comidas. Sal a 4:58 los primeros 5 km y aprieta desde el 15.",
  s:[
-  {d:"Martes",t:"calidad",ti:"Activación",de:"7 km con 5 × 1 min a 4:50 dentro del rodaje.",km:7},
-  {d:"Jueves",t:"suave",ti:"Rodaje de descarga",de:"5 km muy suaves más 4 rectas.",km:5},
-  {d:"Domingo 14",t:"carrera",ti:"Mitja Marató de Barcelona",de:"21,1 km. Objetivo 1:43:00, ritmo medio 4:53 min/km.",km:21.1}
+  {d:"Martes",t:"calidad",ti:"Activación",de:"7 km con 5 × 1 min a 4:50 dentro del rodaje.",rp:"5:45",km:7},
+  {d:"Jueves",t:"suave",ti:"Rodaje de descarga",de:"5 km muy suaves más 4 rectas.",rp:"6:05",km:5},
+  {d:"Domingo 14",t:"carrera",ti:"Mitja Marató de Barcelona",de:"21,1 km. Objetivo 1:43:00, ritmo medio 4:53 min/km.",rp:"4:53",km:21.1}
  ]}
 ];
 
@@ -479,13 +510,101 @@ function counts(){
   return {done,total};
 }
 
+/* ---------- Nota ---------- */
+function secs(t){
+  if(!t) return null;
+  const m = String(t).trim().match(/^(\d{1,2})[:.,](\d{1,2})$/);
+  if(!m) return null;
+  return (+m[1])*60 + (+m[2]);
+}
+function paceScore(real, prev){
+  const r = secs(real), p = secs(prev);
+  if(!r || !p) return null;
+  const dev = Math.abs(r-p)/p*100;       // desviación en %
+  return Math.max(0, Math.min(10, 10 - Math.max(0, dev-2)*1.0));
+}
+
+// Devuelve la nota de una semana, o null si todavía no hay nada registrado
+function weekScore(w){
+  const run = w.s.filter(s=>s.t!=="fuerza");
+  const str = w.s.find(s=>s.t==="fuerza");
+  let doneRun=0, plannedKm=0, realKm=0, paces=[], any=false;
+
+  w.s.forEach((s,i)=>{
+    const v = get(w.n,i);
+    if(s.t==="fuerza") return;
+    plannedKm += s.km;
+    if(v.done){ doneRun++; any=true; realKm += parseFloat(v.km)||s.km; }
+    else if(v.km) realKm += parseFloat(v.km)||0;
+    const ps = paceScore(v.pace, s.rp);
+    if(ps!==null){ paces.push(ps); any=true; }
+  });
+
+  let strScore = null;
+  if(str){
+    const v = get(w.n, w.s.indexOf(str));
+    if(v.ses!==undefined && v.ses!=="" ){ strScore = Math.min(2,+v.ses)/2*10; any=true; }
+    else if(v.done){ strScore = 10; any=true; }
+  }
+  if(!any) return null;
+
+  const cump = run.length ? doneRun/run.length*10 : 0;
+  const vol  = plannedKm ? Math.min(1, realKm/plannedKm)*10 : 0;
+  const rit  = paces.length ? paces.reduce((a,b)=>a+b,0)/paces.length : null;
+
+  const parts = [
+    {k:"Constancia", v:cump, w:45},
+    {k:"Volumen",    v:vol,  w:20},
+    {k:"Ritmo",      v:rit,  w:25},
+    {k:"Fuerza",     v:strScore, w:10}
+  ];
+  const active = parts.filter(p=>p.v!==null && p.v!==undefined);
+  const tw = active.reduce((a,p)=>a+p.w,0) || 1;
+  const nota = active.reduce((a,p)=>a+p.v*p.w,0)/tw;
+  return {nota, parts, doneRun, runTotal:run.length, realKm, plannedKm};
+}
+
+function grade(n){
+  if(n>=9)   return "Semana redonda";
+  if(n>=8)   return "Muy buena semana";
+  if(n>=7)   return "En ruta hacia 1:43";
+  if(n>=5.5) return "Se puede apretar más";
+  return "Semana floja, no la arrastres";
+}
+
+function globalScore(){
+  const now = new Date();
+  const list = [];
+  PLAN.forEach(w=>{
+    if(new Date(w.start+"T00:00:00") > now) return;
+    const r = weekScore(w);
+    if(r) list.push(r.nota);
+  });
+  return list.length ? list.reduce((a,b)=>a+b,0)/list.length : null;
+}
+
+function streak(){
+  const now = new Date();
+  let n = 0;
+  for(let i=PLAN.length-1;i>=0;i--){
+    const w = PLAN[i];
+    if(new Date(w.start+"T00:00:00") > now) continue;
+    const r = weekScore(w);
+    if(r && r.nota >= 7) n++;
+    else if(r) break;
+  }
+  return n;
+}
+
 function renderHero(){
   const days = Math.max(0, Math.ceil((RACE - new Date())/86400000));
   const c = counts();
   document.getElementById("stDays").textContent = days;
   document.getElementById("stDone").textContent = c.done + "/" + c.total;
   document.getElementById("stKm").textContent = realKm().toFixed(0);
-  document.getElementById("stAdh").textContent = c.total ? Math.round(c.done/c.total*100)+"%" : "0%";
+  const g = globalScore();
+  document.getElementById("stNota").textContent = g===null ? "—" : g.toFixed(1).replace(".",",");
+  document.getElementById("stRacha").textContent = streak();
 }
 
 function renderStrip(){
@@ -533,20 +652,41 @@ function renderWeek(){
       + '<div class="ses-day">'+s.d+'</div>'
       + '<div class="ses-title"><span class="tagline" style="background:'+TAGCOLOR[s.t]+'"></span>'+s.ti+'</div>'
       + '<p class="ses-detail">'+s.de+'</p></div>'
-      + (s.km ? '<div class="ses-km">'+s.km+' km</div>' : '')
+      + (s.km ? '<div class="ses-km">'+s.km+' km<br>'+(s.rp||"")+'</div>' : '')
       + '</div>'
       + '<div class="log">'
-      + '<label>Km reales<input type="number" step="0.1" min="0" inputmode="decimal" data-f="km" data-i="'+i+'" value="'+(v.km||"")+'" placeholder="'+(s.km||"")+'"></label>'
-      + '<label>Ritmo<input type="text" data-f="pace" data-i="'+i+'" value="'+(v.pace||"")+'" placeholder="5:30"></label>'
-      + '<label>Esfuerzo<select data-f="rpe" data-i="'+i+'"><option value="">—</option>'
-      + [1,2,3,4,5,6,7,8,9,10].map(n=>'<option value="'+n+'"'+(String(v.rpe)===String(n)?" selected":"")+'>'+n+'</option>').join("")
-      + '</select></label></div></div>';
+      + (s.t==="fuerza"
+          ? '<label>Sesiones hechas<select data-f="ses" data-i="'+i+'">'
+            + ["","0","1","2"].map(n=>'<option value="'+n+'"'+(String(v.ses||"")===n?" selected":"")+'>'+(n===""?"—":n)+'</option>').join("")
+            + '</select></label>'
+          : '<label>Km reales<input type="number" step="0.1" min="0" inputmode="decimal" data-f="km" data-i="'+i+'" value="'+(v.km||"")+'" placeholder="'+(s.km||"")+'"></label>'
+            + '<label>Ritmo real<input type="text" data-f="pace" data-i="'+i+'" value="'+(v.pace||"")+'" placeholder="'+(s.rp||"5:30")+'"></label>'
+            + '<label>Esfuerzo<select data-f="rpe" data-i="'+i+'"><option value="">—</option>'
+            + [1,2,3,4,5,6,7,8,9,10].map(n=>'<option value="'+n+'"'+(String(v.rpe)===String(n)?" selected":"")+'>'+n+'</option>').join("")
+            + '</select></label>')
+      + '</div></div>';
   });
 
   html += '<div class="wsum">'
     + '<span>Previsto <b>'+plannedKm.toFixed(1).replace(".0","")+' km</b></span>'
     + '<span>Hecho <b>'+doneKm.toFixed(1).replace(".0","")+' km</b></span>'
     + '<span>Esfuerzo medio <b>'+(rpes.length ? (rpes.reduce((a,b)=>a+b,0)/rpes.length).toFixed(1) : "—")+'</b></span></div>';
+
+  const sc = weekScore(w);
+  if(sc){
+    html += '<div class="score"><div class="score-num">'
+      + '<b>'+sc.nota.toFixed(1).replace(".",",")+'</b><span>nota de la semana</span>'
+      + '<i>'+grade(sc.nota)+'</i></div><div class="breakdown">';
+    sc.parts.forEach(p=>{
+      const val = (p.v===null||p.v===undefined) ? null : p.v;
+      html += '<div class="brow"><u>'+p.k+'</u><k><b style="width:'+(val===null?0:Math.round(val*10))+'%"></b></k>'
+        + '<var>'+(val===null?"—":val.toFixed(1).replace(".",","))+'</var></div>';
+    });
+    html += '</div></div>';
+    if(sc.parts[2].v===null){
+      html += '<p class="hint">Apunta el ritmo real de cada sesión y la nota tendrá en cuenta lo cerca que has corrido del ritmo previsto.</p>';
+    }
+  }
 
   html += '<div class="notes"><label for="note">Notas de la semana: cómo te has sentido, molestias, sueño, qué cambiarías</label>'
     + '<textarea id="note" placeholder="El martes las series salieron mejor de lo esperado...">'+(state["n"+w.n]||"")+'</textarea></div>';
@@ -562,7 +702,11 @@ function renderWeek(){
   });
   el.querySelectorAll('[data-f]').forEach(inp=>{
     const i = +inp.dataset.i, f = inp.dataset.f;
-    inp.onchange = ()=>{ const p={}; p[f]=inp.value; set(w.n,i,p); };
+    inp.onchange = ()=>{
+      const p = {}; p[f] = inp.value;
+      if(f==="ses") p.done = (+inp.value > 0);
+      set(w.n,i,p);
+    };
   });
   const note = el.querySelector("#note");
   note.oninput = ()=>{ state["n"+w.n] = note.value; queueSave(); };
