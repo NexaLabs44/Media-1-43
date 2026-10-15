@@ -242,7 +242,27 @@ footer .ver{display:inline-block;margin-top:6px;font-size:.72rem;opacity:.75;fon
 .ex p{margin:0;font-size:.82rem;color:var(--soft)}
 .jump{display:inline-block;margin-top:5px;color:var(--teal);font-size:.82rem}
 
+/* ---------- Datos de Garmin ---------- */
+.gar{margin:12px 0 0 34px;border-left:3px solid var(--teal);padding:2px 0 2px 12px}
+.gar-h{font-size:.72rem;color:var(--soft);margin-bottom:6px}
+.gar-h b{color:var(--teal);font-variation-settings:"wght" 700}
+.kpis{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.86rem;font-feature-settings:"tnum"}
+.kpis span{color:var(--soft)}
+.kpis b{color:var(--ink);font-variation-settings:"wght" 650}
+.reps{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.reps span{font-size:.75rem;padding:3px 8px;border-radius:99px;border:1px solid var(--line);font-feature-settings:"tnum"}
+.reps .ok{background:rgba(27,122,106,.12);border-color:rgba(27,122,106,.35)}
+.reps .fast{background:rgba(196,43,28,.10);border-color:rgba(196,43,28,.35)}
+.reps .slow{background:rgba(217,160,40,.15);border-color:rgba(217,160,40,.45)}
+.gar-note{font-size:.86rem;margin:8px 0 0;max-width:62ch}
+.prog{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:22px}
+.prog h2{font-size:.95rem;font-variation-settings:"wght" 700;margin:0 0 10px}
+.prog .scroll{overflow-x:auto}
+.prog td,.prog th{white-space:nowrap}
+.chart{width:100%;height:auto;display:block;margin:6px 0 14px}
+
 @media (max-width:560px){
+  .gar{margin-left:0}
   .wrap{padding:0 14px 56px}
   .week{padding:16px}
   .log{margin-left:0}
@@ -283,6 +303,8 @@ footer .ver{display:inline-block;margin-top:6px;font-size:.72rem;opacity:.75;fon
 </section>
 
 <section class="week" id="week"></section>
+
+<section class="prog" id="prog"></section>
 
 <section class="strength" id="fuerza">
   <h2>La sesión de fuerza</h2>
@@ -511,7 +533,7 @@ footer .ver{display:inline-block;margin-top:6px;font-size:.72rem;opacity:.75;fon
   </div>
 </section>
 
-<footer>Plan de 18 semanas. Martes, jueves y sábado, con la fuerza de piernas pegada al martes. Del 12 de octubre de 2026 al 14 de febrero de 2027.<br><span class="ver">v2 · 7 de octubre de 2026</span></footer>
+<footer>Plan de 18 semanas. Martes, jueves y sábado, con la fuerza de piernas pegada al martes. Del 12 de octubre de 2026 al 14 de febrero de 2027.<br><span class="ver">v3.1 · 16 de octubre de 2026 · datos de Garmin</span></footer>
 </div>
 
 <script>
@@ -676,6 +698,29 @@ const PLAN = [
 ];
 
 /* ============================================================
+   GARMIN — datos de los archivos .fit, los añade Claude cada semana
+   con analisis/fit2app.py. Clave: "w<semana>s<posición de la sesión>".
+   Lo que hay aquí manda sobre lo escrito a mano (salvo el esfuerzo).
+     km, tiempo, ritmo, fc, fcmax, parado (s)    toda la sesión
+     clave: ritmo y reps de las partes rápidas, obj = rango previsto,
+            suave = ritmo de lo demás, sobj = rango previsto de lo suave
+     ef: metros por latido en suave tras 10 min (suave y largo)
+     deriva: % de eficiencia perdida en la 2.ª mitad (largo)
+     com: comentario de la sesión
+   Fuerza: {fecha, fuerza:true, com} la marca como hecha en todos los dispositivos.
+   ============================================================ */
+const GARMIN = {
+"w1s0":{fecha:"2026-10-13",km:7.01,tiempo:"37:47",ritmo:"5:23",fc:142,fcmax:157,parado:71,
+  clave:{ritmo:"4:09",obj:"4:15–4:25",suave:"5:34",sobj:"5:25–5:45",
+    reps:[{min:"13:10",s:23,r:"4:40",fc:153},{min:"15:19",s:39,r:"4:26",fc:149},{min:"17:54",s:36,r:"4:20",fc:153},
+          {min:"20:37",s:42,r:"4:07",fc:147},{min:"23:11",s:44,r:"3:58",fc:155},{min:"26:08",s:38,r:"3:46",fc:142}]},
+  com:"Lo suave, bien (5:34). Las series fueron de menos a más y las tres últimas se salieron del rango: 3:46 es más rápido que tu ritmo de 5K. Cada cambio duró unos 40 s rápidos de verdad, no 60. Faltó 1 km. La FC media baja no es un fallo: en cambios de 1 minuto el pulso no llega a subir."},
+"w1s1":{fecha:"2026-10-13",fuerza:true,com:"Hecha justo después del fartlek."},
+"w1s2":{fecha:"2026-10-15",km:7.01,tiempo:"36:08",ritmo:"5:09",fc:140,fcmax:150,parado:11,ef:1.33,
+  com:"Rodaje a 5:09, entre 20 y 35 s/km más rápido que el rango previsto (5:30–5:45), pero con FC media 140 y máxima 150: por pulso fue un rodaje suave. Parciales 5:07 · 4:50 · 5:07 · 5:10 · 5:05 · 5:17 · 5:26. Rectas no hechas. Sensación cómoda, pudiendo hablar, y pulso de muñeca estable: todo indica que fue suave de verdad y que la zona de 5:30–5:45 puede quedarse lenta para ti. Se decide con el largo del sábado."}
+};
+
+/* ============================================================
    Estado y almacenamiento
    ============================================================ */
 const KEY = "mitja-bcn-2027-v2";
@@ -706,9 +751,16 @@ function flash(msg){
 }
 
 function key(w,i){ return "w"+w+"s"+i; }
-function get(w,i){ return state[key(w,i)] || {}; }
+function garmin(w,i){ return GARMIN[key(w,i)] || null; }
+function get(w,i){
+  const v = state[key(w,i)] || {};
+  const g = garmin(w,i);
+  if(!g) return v;
+  if(g.fuerza) return Object.assign({}, v, {done:true, ses:"1", g:g});
+  return Object.assign({}, v, {done:true, km:g.km, pace:g.ritmo, hr:g.fc, g:g});
+}
 function set(w,i,patch){
-  state[key(w,i)] = Object.assign({}, get(w,i), patch);
+  state[key(w,i)] = Object.assign({}, state[key(w,i)] || {}, patch);
   queueSave(); render();
 }
 
@@ -729,7 +781,7 @@ function pickCurrentWeek(){
 function weekKm(w){ return w.s.reduce((a,s)=>a+s.km,0); }
 function realKm(){
   let t=0;
-  Object.values(state).forEach(v=>{ if(v && v.done && v.km) t += parseFloat(v.km)||0; });
+  PLAN.forEach(w=>w.s.forEach((s,i)=>{ const v=get(w.n,i); if(v.done && v.km) t += parseFloat(v.km)||0; }));
   return t;
 }
 function counts(){
@@ -752,6 +804,34 @@ function paceScore(real, prev){
   return Math.max(0, Math.min(10, 10 - Math.max(0, dev-2)*1.0));
 }
 
+// Nota de un ritmo frente a un rango "4:15–4:25": 10 dentro, 1,5 puntos menos
+// por cada 1 % fuera, sea por rápido o por lento
+function range(r){ const p=String(r||"").split(/[–-]/); return p.length===2 ? [secs(p[0]),secs(p[1])] : null; }
+function rangeDev(real, r){
+  const x = secs(real), rg = range(r);
+  if(!x || !rg) return null;
+  if(x < rg[0]) return (x-rg[0])/rg[0]*100;   // negativo = más rápido
+  if(x > rg[1]) return (x-rg[1])/rg[1]*100;   // positivo = más lento
+  return 0;
+}
+function rangeScore(real, r){
+  const d = rangeDev(real, r);
+  return d===null ? null : Math.max(0, 10 - Math.abs(d)*1.5);
+}
+// Con Garmin: en calidad se puntúa cada repetición y lo suave por separado
+function sessionPace(v, s){
+  const g = v.g;
+  if(g && g.clave && g.clave.obj){
+    const sc = g.clave.reps.map(x=>rangeScore(x.r, g.clave.obj)).filter(x=>x!==null);
+    const parts = [];
+    if(sc.length) parts.push(sc.reduce((a,b)=>a+b,0)/sc.length);
+    const e = rangeScore(g.clave.suave, g.clave.sobj);
+    if(e!==null) parts.push(e);
+    if(parts.length) return parts.reduce((a,b)=>a+b,0)/parts.length;
+  }
+  return paceScore(v.pace, s.rp);
+}
+
 // Devuelve la nota de una semana, o null si todavía no hay nada registrado
 function weekScore(w){
   const run = w.s.filter(s=>s.t!=="fuerza");
@@ -764,7 +844,7 @@ function weekScore(w){
     plannedKm += s.km;
     if(v.done){ doneRun++; any=true; realKm += parseFloat(v.km)||s.km; }
     else if(v.km) realKm += parseFloat(v.km)||0;
-    const ps = paceScore(v.pace, s.rp);
+    const ps = sessionPace(v, s);
     if(ps!==null){ paces.push(ps); any=true; }
   });
 
@@ -875,15 +955,20 @@ function renderWeek(){
     const v = get(w.n,i);
     html += '<div class="ses'+(v.done?" done":"")+'">'
       + '<div class="ses-top">'
-      + '<input type="checkbox" id="c'+i+'"'+(v.done?" checked":"")+' aria-label="Marcar '+s.ti+' como hecho">'
+      + '<input type="checkbox" id="c'+i+'"'+(v.done?" checked":"")+(v.g?" disabled title=\"Registrada con Garmin\"":"")+' aria-label="Marcar '+s.ti+' como hecho">'
       + '<div class="ses-body">'
       + '<div class="ses-day">'+s.d+'</div>'
       + '<div class="ses-title"><span class="tagline" style="background:'+TAGCOLOR[s.t]+'"></span>'+s.ti+'</div>'
       + '<p class="ses-detail">'+s.de+(s.t==="fuerza"?' <a class="jump" href="#fuerza">Ver la sesión completa</a>':'')+'</p></div>'
       + (s.km ? '<div class="ses-km"><u>'+s.km+' km</u><br>'+(s.rp||"")+(s.fc?'<br>'+s.fc+' ppm':'')+'</div>' : '')
       + '</div>'
+      + (v.g ? garminHTML(v.g) : '')
       + '<div class="log">'
-      + (s.t==="fuerza"
+      + (v.g && v.g.fuerza ? ''
+      : v.g ? '<label>Esfuerzo<select data-f="rpe" data-i="'+i+'"><option value="">—</option>'
+            + [1,2,3,4,5,6,7,8,9,10].map(n=>'<option value="'+n+'"'+(String(v.rpe)===String(n)?" selected":"")+'>'+n+'</option>').join("")
+            + '</select></label>'
+      : s.t==="fuerza"
           ? '<label>¿Hecha?<select data-f="ses" data-i="'+i+'">'
             + ["","0","1"].map(n=>'<option value="'+n+'"'+(String(v.ses||"")===n?" selected":"")+'>'+(n===""?"—":(n==="1"?"Sí":"No"))+'</option>').join("")
             + '</select></label>'
@@ -952,7 +1037,9 @@ function hrWarning(w){
   const bajas = [];
   w.s.forEach((s,i)=>{
     if(s.t==="suave" || s.t==="fuerza" || !s.fc) return;
-    const hr = parseFloat(get(w.n,i).hr);
+    const gv = get(w.n,i);
+    if(gv.g && gv.g.clave) return;   // con series medidas manda el ritmo, no la FC media
+    const hr = parseFloat(gv.hr);
     if(!hr) return;
     const min = parseFloat(s.fc.split("–")[0]);
     if(hr < min - 5) bajas.push(s.ti);
@@ -962,7 +1049,78 @@ function hrWarning(w){
     + ". El ritmo puede estar bien y la intensidad corta: es exactamente lo que pasó en la media de 2025. Revisa si te sobró o si el sensor falló.";
 }
 
-function render(){ renderHero(); renderStrip(); renderWeek(); }
+function fmtN(x,d){ return x===null||x===undefined ? "—" : (+x).toFixed(d).replace(".",","); }
+function fmtDate(f){ const p=f.split("-"); return +p[2]+"/"+(+p[1]); }
+
+function garminHTML(g){
+  if(g.fuerza) return '<div class="gar"><div class="gar-h"><b>Hecha</b> · '+fmtDate(g.fecha)+'</div>'
+    + (g.com ? '<p class="gar-note">'+g.com+'</p>' : '') + '</div>';
+  let h = '<div class="gar"><div class="gar-h"><b>Garmin</b> · '+fmtDate(g.fecha)
+    + (g.parado>30 ? ' · '+Math.round(g.parado)+' s parado' : '')+'</div>'
+    + '<div class="kpis">'
+    + '<span><b>'+fmtN(g.km,2)+'</b> km</span>'
+    + '<span><b>'+g.tiempo+'</b></span>'
+    + '<span><b>'+g.ritmo+'</b> /km</span>'
+    + '<span>FC <b>'+(g.fc||"—")+'</b>'+(g.fcmax?' · máx '+g.fcmax:'')+'</span>';
+  if(g.ef)     h += '<span>Eficiencia <b>'+fmtN(g.ef,2)+'</b> m/latido</span>';
+  if(g.deriva!==undefined && g.deriva!==null) h += '<span>Deriva <b>'+fmtN(g.deriva,1)+' %</b></span>';
+  h += '</div>';
+  if(g.clave){
+    h += '<div class="kpis" style="margin-top:6px">'
+      + '<span>Parte clave <b>'+(g.clave.ritmo||"—")+'</b>'+(g.clave.obj?' (obj. '+g.clave.obj+')':'')+'</span>'
+      + (g.clave.suave ? '<span>Suave <b>'+g.clave.suave+'</b>'+(g.clave.sobj?' (obj. '+g.clave.sobj+')':'')+'</span>' : '')
+      + '</div><div class="reps">';
+    g.clave.reps.forEach((x,k)=>{
+      const d = rangeDev(x.r, g.clave.obj);
+      const cls = d===null ? "" : d===0 ? "ok" : d<0 ? "fast" : "slow";
+      h += '<span class="'+cls+'" title="Minuto '+x.min+', '+x.s+' s, FC máx '+(x.fc||"—")+'">'+(k+1)+' · '+x.r+'</span>';
+    });
+    h += '</div>';
+  }
+  if(g.com) h += '<p class="gar-note">'+g.com+'</p>';
+  return h + '</div>';
+}
+
+/* ---------- Progresión ---------- */
+function renderProg(){
+  const el = document.getElementById("prog");
+  const rows = [];
+  PLAN.forEach(w=>w.s.forEach((s,i)=>{ const g = garmin(w.n,i); if(g && !g.fuerza) rows.push({w,s,g}); }));
+  let h = '<h2>Progresión con datos de Garmin</h2>';
+  if(!rows.length){ el.innerHTML = h + '<p class="hint">Aún no hay actividades importadas.</p>'; return; }
+
+  // Gráfica de eficiencia (suave y largo)
+  const ef = rows.filter(r=>r.g.ef);
+  if(ef.length >= 2){
+    const W=640,H=150,P=34, vals=ef.map(r=>r.g.ef);
+    const lo=Math.min(...vals)*0.98, hi=Math.max(...vals)*1.02;
+    const x=k=>P+k*(W-2*P)/(ef.length-1), y=v=>H-22-(v-lo)/(hi-lo)*(H-40);
+    const pts = ef.map((r,k)=>x(k).toFixed(1)+","+y(r.g.ef).toFixed(1)).join(" ");
+    h += '<p class="hint">Eficiencia aeróbica en rodajes y largos: metros recorridos por cada latido. Si sube con el paso de las semanas, estás más en forma aunque el ritmo no cambie.</p>'
+      + '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Evolución de la eficiencia">'
+      + '<polyline points="'+pts+'" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linejoin="round"/>'
+      + ef.map((r,k)=>'<circle cx="'+x(k).toFixed(1)+'" cy="'+y(r.g.ef).toFixed(1)+'" r="4" fill="var(--teal)"/>'
+          + '<text x="'+x(k).toFixed(1)+'" y="'+(y(r.g.ef)-9).toFixed(1)+'" font-size="11" text-anchor="middle" fill="var(--ink)">'+fmtN(r.g.ef,2)+'</text>'
+          + '<text x="'+x(k).toFixed(1)+'" y="'+(H-4)+'" font-size="10" text-anchor="middle" fill="var(--soft)">'+fmtDate(r.g.fecha)+'</text>').join("")
+      + '</svg>';
+  } else {
+    h += '<p class="hint">La gráfica de eficiencia aparece cuando haya al menos dos rodajes o largos importados.</p>';
+  }
+
+  h += '<div class="scroll"><table><tr><th>Fecha</th><th>Sesión</th><th>Km</th><th>Ritmo</th><th>FC</th><th>Indicador</th></tr>';
+  rows.forEach(r=>{
+    const g=r.g;
+    let ind = "—";
+    if(g.clave && g.clave.ritmo) ind = "Clave "+g.clave.ritmo+(g.clave.obj?" ("+g.clave.obj+")":"");
+    else if(g.deriva!==undefined && g.deriva!==null) ind = fmtN(g.ef,2)+" m/lat · deriva "+fmtN(g.deriva,1)+" %";
+    else if(g.ef) ind = fmtN(g.ef,2)+" m/latido";
+    h += '<tr><td>'+fmtDate(g.fecha)+'</td><td>S'+r.w.n+' · '+r.s.ti+'</td><td>'+fmtN(g.km,1)+'</td><td>'+g.ritmo+'</td><td>'+(g.fc||"—")+'</td><td>'+ind+'</td></tr>';
+  });
+  h += '</table></div>';
+  el.innerHTML = h;
+}
+
+function render(){ renderHero(); renderStrip(); renderWeek(); renderProg(); }
 render();
 
 /* ============================================================
